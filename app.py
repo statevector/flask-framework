@@ -12,38 +12,13 @@ from bokeh.models import ColumnDataSource, HoverTool
 #from bokeh.io import output_notebook
 #output_notebook()
 
+# connect the app
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    return 'Index Page'
-
-@app.route('/hello')
-def hello():
-    return 'Hello, World'
-
-#@app.route("/<int:bars_count>/")
-#def chart(bars_count):
-#    if bars_count <= 0:
-#        bars_count = 1
-
-@app.route('/plot')
-def chart():
-
-    bars_count = 11
-
-    # dictionary mapping string to list
-    data = {'days': [], 'bugs': [], 'costs': []}
-    for i in range(1, bars_count + 1):
-        data['days'].append(i)
-        data['bugs'].append(random.randint(1,100))
-        data['costs'].append(random.uniform(1.00, 1000.00))
-
-    # output to static HTML file
-    #output_file("bugs.html")
+# the plotting function
+def MakePlot(data):
 
     source = ColumnDataSource(data)
-
     print(source.column_names)
 
     #source = ColumnDataSource(dict(
@@ -85,20 +60,51 @@ def chart():
 
     #hover = create_hover_tool()
     #plot = create_bar_chart(data, "Bugs per day", "days", "bugs", hover)
+
+    # return the finalized plot
+    return p
+
+
+# the homepage
+@app.route('/')
+def homepage():
+
+	# get the data, from somewhere...
+    # (here, dictionary mapping string to list)
+    bars_count = 11
+    data = {'days': [], 'bugs': [], 'costs': []}
+    for i in range(1, bars_count + 1):
+        data['days'].append(i)
+        data['bugs'].append(random.randint(1,100))
+        data['costs'].append(random.uniform(1.00, 1000.00))
+
+    # setup the plot
+    p = MakePlot(data)
     script, div = components(p)
 
     print(script)
-
     print(div)
 
-    return render_template("chart.html", bars_count=bars_count,
-                           the_div=div, the_script=script)
+    # render the html page
+    return render_template("chart.html", the_div=div, the_script=script)
 
 
 
 
 
 
+
+
+
+
+
+#@app.route('/')
+#def index():
+#    return 'Index Page'
+
+@app.route('/hello')
+def hello():
+    return 'Hello, World'
 
 @app.route('/user/<username>')
 def show_user_profile(username):
