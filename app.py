@@ -9,6 +9,9 @@ from bokeh.plotting import figure, output_file, show
 from bokeh.embed import components
 from bokeh.models import ColumnDataSource, HoverTool
 
+#from bokeh.io import output_notebook
+#output_notebook()
+
 app = Flask(__name__)
 
 @app.route('/')
