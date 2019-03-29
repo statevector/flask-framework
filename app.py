@@ -43,13 +43,13 @@ def chart(bars_count):
     #    y = data.height_m,
     #)
 
-    PLOT_OPTS = dict(
-        height=400, 
-        x_axis_type='log', 
-        y_axis_type='log', 
-        y_range=(0.08,20), 
-        x_range=(0.08,2000)
-    )
+    #PLOT_OPTS = dict(
+    #    height=400, 
+    #    x_axis_type='log', 
+    #    y_axis_type='log', 
+    #    y_range=(0.08,20), 
+    #    x_range=(0.08,2000)
+    #)
 
     hover = HoverTool(tooltips = [
         ('days','@days'),
@@ -57,12 +57,12 @@ def chart(bars_count):
         ('costs','@costs')], 
         show_arrow=False)
 
-    p = figure(title='Pokémon',
-        x_axis_label='Weight [kg]',
-        y_axis_label='Height [m]',
-        title_location='above',
-        toolbar_location='right',
-        tools=[hover], **PLOT_OPTS)
+    #p = figure(title='Pokémon',
+    #    x_axis_label='Weight [kg]',
+    #    y_axis_label='Height [m]',
+    #    title_location='above',
+    #    toolbar_location='right',
+    #    tools=[hover], **PLOT_OPTS)
 
     # create a new plot with a title and axis labels
     p = figure(plot_height=250, title="Bug Counts",
