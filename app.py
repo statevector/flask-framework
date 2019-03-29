@@ -19,13 +19,18 @@ def index():
 def hello():
     return 'Hello, World'
 
-@app.route("/<int:bars_count>/")
-def chart(bars_count):
-    if bars_count <= 0:
-        bars_count = 1
+#@app.route("/<int:bars_count>/")
+#def chart(bars_count):
+#    if bars_count <= 0:
+#        bars_count = 1
+
+@app.route('/plot')
+def chart():
+
+    bars_count = 11
 
     # dictionary mapping string to list
-    data = {"days": [], "bugs": [], "costs": []}
+    data = {'days': [], 'bugs': [], 'costs': []}
     for i in range(1, bars_count + 1):
         data['days'].append(i)
         data['bugs'].append(random.randint(1,100))
@@ -78,6 +83,10 @@ def chart(bars_count):
     #hover = create_hover_tool()
     #plot = create_bar_chart(data, "Bugs per day", "days", "bugs", hover)
     script, div = components(p)
+
+    print(script)
+
+    print(div)
 
     return render_template("chart.html", bars_count=bars_count,
                            the_div=div, the_script=script)
