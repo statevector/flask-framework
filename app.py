@@ -9,7 +9,6 @@ from bokeh.models import (HoverTool, FactorRange, Plot, LinearAxis, Grid, Range1
 from bokeh.plotting import figure, output_file, show
 from bokeh.embed import components
 from bokeh.models import ColumnDataSource, HoverTool
-#from bokeh.models import TextInput, Button
 
 # connect the app
 app = Flask(__name__)
@@ -23,9 +22,10 @@ def GetData(ticker_symbol, columns):
         #qopts = { 'columns': ['ticker', 'date', 'open', 'close', 'adj_open', 'adj_close'] }, 
         qopts = { 'columns': columns},
         ticker = [ticker_symbol], 
-        date = { 'gte': '2016-01-01', 'lte': '2016-12-31' }, paginate=True)
+        date = { 'gte': '2017-01-01', 'lte': '2017-12-31' }, paginate=True)
 
     return data
+
 
 # the plotting function
 def MakePlot(data):
@@ -37,37 +37,29 @@ def MakePlot(data):
     # set the tools
     TOOLS = "pan, wheel_zoom, box_zoom, reset, save"
 
-    #p = figure(title='Pokémon',
-    #    x_axis_label='Weight [kg]',
-    #    y_axis_label='Height [m]',
-    #    title_location='above',
-    #    toolbar_location='right',
-    #    tools=[hover], **PLOT_OPTS)
-
     # initialize the canvas for plotting
-    p1 = figure(x_axis_type="datetime", title="Stock Prices 2016", tools=[TOOLS])
-    p1.grid.grid_line_alpha = 0.3
+    p1 = figure(x_axis_type="datetime", title="Quandl WIKI EOD Stock Prices - 2017", tools=[TOOLS])
+    p1.grid.grid_line_alpha = 0.6
     p1.xaxis.axis_label = 'Date'
     p1.yaxis.axis_label = 'Price'
-    #p = figure(tools=[hover], **PLOT_OPTS)
 
-    ticker = str(data['ticker'].unique())
-    print(ticker)
+    ticker = str(data.iloc[0]['ticker'])
+    #print(ticker)
 
+    # plot only what the user has selected
     if('open' in data.columns): 
-    	p1.line(data['date'], data['open'], color='#A6CEE3', legend=ticker+': open')
+    	p1.line(data['date'], data['open'], color='orange', legend=ticker+': open')
     if('close' in data.columns): 
-    	p1.line(data['date'], data['close'], color='#B2DF8A', legend=ticker+': close')
+    	p1.line(data['date'], data['close'], color='blue', legend=ticker+': close')
     if('adj_open' in data.columns): 
-    	p1.line(data['date'], data['adj_open'], color='#33A02C', legend=ticker+': adj_open')
+    	p1.line(data['date'], data['adj_open'], color='red', legend=ticker+': adj_open')
     if('adj_close' in data.columns): 
-    	p1.line(data['date'], data['adj_close'], color='#FB9A99', legend=ticker+': adj_close')
+    	p1.line(data['date'], data['adj_close'], color='green', legend=ticker+': adj_close')
     
     p1.legend.location = 'top_left'
 
     # return the finalized plot
     return p1
-
 
 
 # the homepage
@@ -104,7 +96,7 @@ def homepage():
         #print(script)
         #print(div)
 
-        # render the html page with the plot embedded
+        # render the HTML page with the plot embedded
         return render_template("chart.html", the_div=div, the_script=script)
 
     else:
@@ -112,16 +104,8 @@ def homepage():
         return render_template('login.html', ticker_symbol=ticker_symbol)
 
 
-
-
-
-
-
-
-
 #if __name__ == "__main__":
 #    app.run(debug=True)
 
 if __name__ == '__main__':
  	app.run(port=33507)
-
