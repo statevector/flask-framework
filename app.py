@@ -16,10 +16,10 @@ app = Flask(__name__)
 # the dataframe function
 def GetData(ticker_symbol, columns):
 
-    quandl.ApiConfig.api_key = 'Y-vgM5syW3N9KmRk7nZY'
+    # your API key goes here
+    quandl.ApiConfig.api_key = '...'
 
     data = quandl.get_table('WIKI/PRICES', 
-        #qopts = { 'columns': ['ticker', 'date', 'open', 'close', 'adj_open', 'adj_close'] }, 
         qopts = { 'columns': columns},
         ticker = [ticker_symbol], 
         date = { 'gte': '2017-01-01', 'lte': '2017-12-31' }, paginate=True)
