@@ -17,7 +17,7 @@ app = Flask(__name__)
 def get_data(ticker_symbol, columns):
 
     # your API key goes here
-    quandl.ApiConfig.api_key = 'Y-vgM5syW3N9KmRk7nZY'
+    quandl.ApiConfig.api_key = '...'
 
     data = quandl.get_table('WIKI/PRICES', 
         qopts = { 'columns': columns},
