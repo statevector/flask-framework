@@ -5,7 +5,7 @@ import pandas as pd
 import requests
 import quandl
 
-from bokeh.models import (HoverTool, FactorRange, Plot, LinearAxis, Grid, Range1d)
+from bokeh.models import FactorRange, Plot, LinearAxis, Grid
 from bokeh.plotting import figure, output_file, show
 from bokeh.embed import components
 from bokeh.models import ColumnDataSource, HoverTool
@@ -14,7 +14,7 @@ from bokeh.models import ColumnDataSource, HoverTool
 app = Flask(__name__)
 
 # the dataframe function
-def GetData(ticker_symbol, columns):
+def get_data(ticker_symbol, columns):
 
     # your API key goes here
     quandl.ApiConfig.api_key = '...'
@@ -28,7 +28,7 @@ def GetData(ticker_symbol, columns):
 
 
 # the plotting function
-def MakePlot(data):
+def make_plot(data):
 
     # set the Bokeh column data source
     source = ColumnDataSource(data)
@@ -47,13 +47,13 @@ def MakePlot(data):
     #print(ticker)
 
     # plot only what the user has selected
-    if('open' in data.columns): 
+    if 'open' in data.columns: 
     	p1.line(data['date'], data['open'], color='orange', legend=ticker+': open')
-    if('close' in data.columns): 
+    if 'close' in data.columns: 
     	p1.line(data['date'], data['close'], color='blue', legend=ticker+': close')
-    if('adj_open' in data.columns): 
+    if 'adj_open' in data.columns: 
     	p1.line(data['date'], data['adj_open'], color='red', legend=ticker+': adj_open')
-    if('adj_close' in data.columns): 
+    if 'adj_close' in data.columns: 
     	p1.line(data['date'], data['adj_close'], color='green', legend=ticker+': adj_close')
     
     p1.legend.location = 'top_left'
@@ -61,47 +61,38 @@ def MakePlot(data):
     # return the finalized plot
     return p1
 
-
 # the homepage
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/')
 def homepage():
+    return render_template('login.html')
 
-    ticker_symbol = None
-    close_price = None
-    open_price = None
-    adj_close_price = None
-    adj_open_price = None
+# the homepage after POST request
+@app.route('/', methods=['POST'])
+def plotpage():
 
-    # this block is only executed once the form is submitted
-    if request.method == 'POST':
+    # get the submitted form values...
+    ticker_symbol = request.form.get('ticker')
+    close_price = request.form.get('close')
+    open_price = request.form.get('open')
+    adj_close_price = request.form.get('adj_close')
+    adj_open_price = request.form.get('adj_open')
 
-        # get the submitted form values...
-        ticker_symbol = request.form.get('ticker')
-        close_price = request.form.get('close')
-        open_price = request.form.get('open')
-        adj_close_price = request.form.get('adj_close')
-        adj_open_price = request.form.get('adj_open')
+    # .. and put them a list, removing any 'None' entries
+    columns = ['ticker', 'date', open_price, close_price, adj_close_price, adj_open_price]
+    columns = [col for col in columns if col is not None]
 
-        # .. and put them a list, removing any 'None' entries
-        columns = ['ticker', 'date', open_price, close_price, adj_close_price, adj_open_price]
-        columns = [col for col in columns if col is not None]
+    # build the dataframe using the submitted values
+    data = get_data(ticker_symbol, columns)
+    print(data)
 
-        # build the dataframe using the submitted values
-        data = GetData(ticker_symbol, columns)
-        print(data)
+    # make the plot and extract its components for HTML rendering
+    p = make_plot(data)
+    script, div = components(p)
+    #print(script)
+    #print(div)
 
-        # make the plot and extract its components for html rendering
-        p = MakePlot(data)
-        script, div = components(p)
-        #print(script)
-        #print(div)
-
-        # render the HTML page with the plot embedded
-        return render_template("chart.html", the_div=div, the_script=script)
-
-    else:
-
-        return render_template('login.html', ticker_symbol=ticker_symbol)
+    # render the HTML page with the plot embedded
+    return render_template("chart.html", the_div=div, the_script=script)
 
 
 #if __name__ == "__main__":
